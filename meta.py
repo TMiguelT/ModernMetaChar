@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 
 def get_meta(pages=20):
     results = []
-    for i in range(pages):
+    for i in range(1, pages + 1):
         r = requests.post("http://www.mtgtop8.com/topcards", data={
             'data': 1,
             'current_page': i,
@@ -15,10 +15,10 @@ def get_meta(pages=20):
         })
 
         soup = BeautifulSoup(r.text, 'html.parser')
-        for result in soup.find_all(name='tr', class_='hover_tr'):
-            results.append(result.contents[1].text)
+        cards = [result.contents[1].text for result in soup.find_all(name='tr', class_='hover_tr') + soup.find_all(name='tr', class_='chosen_tr')]
+        results += cards
     return results
 
 
 with open('meta.txt', 'w') as meta:
-    meta.writelines([card + '\n' for card in get_meta(20)])
+    meta.writelines([card + '\n' for card in get_meta(10)])
